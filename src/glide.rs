@@ -11,6 +11,11 @@ use {
 use smash::phx::Vector3f;
 use std::f32::consts::PI;
 
+/*Contributors:
+- Liam Estares (LKE Studios)
+- Ben Hall (arthur!)
+- WuBoytH*/
+
 /*In Brawl, values for gliding were stored and retrieved from the character's param table. This is
  also true for Steve's param vl in Ultimate. However, since we can't really create working params in 
  the character's vl file, we would need to declare the values and variables here instead.*/
