@@ -7,35 +7,19 @@ use smash::lib::lua_const::*;
 use smash::app::lua_bind::*;
 use smash::lua2cpp::L2CAgentBase;
 
-#[acmd_script(//GlideStart
-    agent = "buddy", 
-    script = "effect_glidestart", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn buddy_glidestartgfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn buddy_glidestartgfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 3.0);
     macros::EFFECT(fighter, Hash40::new("sys_smash_flash"), Hash40::new("top"), -4.2, 0, 0, 0, 0, 0, 1.3, 0, 0, 0, 0, 0, 0, true);
     macros::EFFECT_FOLLOW(fighter, Hash40::new("sys_aura_light"), Hash40::new("top"), 0.0, 0, 0, 0, 0, 0, 5.0, true);
     macros::LAST_EFFECT_SET_COLOR(fighter, /*R*/ 2.0, /*G*/ 0.045, /*B*/ 0.1);
 }
 
-#[acmd_script(//GlideWing
-    agent = "buddy", 
-    script = "effect_glidewing", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn buddy_glide2gfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn buddy_glide2gfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::EFFECT_OFF_KIND(fighter, Hash40::new("sys_aura_light"), false, false);
     }
 }
-
-#[acmd_script(//GlideAttack
-    agent = "buddy", 
-    script = "effect_glideattack", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn buddy_glideattackgfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn buddy_glideattackgfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 11.0);
     if macros::is_excute(fighter) {
         EffectModule::enable_sync_init_pos_last(fighter.module_accessor);
@@ -43,22 +27,16 @@ unsafe fn buddy_glideattackgfx(fighter: &mut L2CAgentBase) {
     }
 }  
 
-#[acmd_script(//GlideLanding
-    agent = "buddy", 
-    script = "effect_glidelanding", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn buddy_glidelandinggfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn buddy_glidelandinggfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::LANDING_EFFECT(fighter, Hash40::new("sys_landing_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1.48, 0, 0, 0, 0, 0, 0, false);
     }
 }
 
-pub fn install() {
-    smashline::install_acmd_scripts!(
-        buddy_glidestartgfx,
-        buddy_glide2gfx,
-        buddy_glideattackgfx,
-        buddy_glidelandinggfx
-    );
+pub fn install(agent: &mut Agent) {
+    agent
+        .acmd("effect_glidelanding", buddy_glidelandinggfx, Priority::Low)
+        .acmd("effect_glideattack", buddy_glideattackgfx, Priority::Low)
+        .acmd("effect_glidewing", buddy_glide2gfx, Priority::Low)
+        .acmd("effect_glidestartgfx", buddy_glidestartgfx, Priority::Low);
 }

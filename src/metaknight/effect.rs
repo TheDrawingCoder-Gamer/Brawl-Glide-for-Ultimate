@@ -6,12 +6,7 @@ use smashline::*;
 use smash_script::*;
 use smash::lua2cpp::L2CAgentBase;
 
-#[acmd_script(//GlideStart
-    agent = "metaknight", 
-    script = "effect_glidestart", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn metaknight_glide1gfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_glide1gfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 2.0);
     if macros::is_excute(fighter) {
         macros::EFFECT_FOLLOW(fighter, Hash40::new("metaknight_sword"), Hash40::new("haver"), 0.0, 0, 0, 0, 0, 0, 1, true);
@@ -21,24 +16,14 @@ unsafe fn metaknight_glide1gfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideWing
-    agent = "metaknight", 
-    script = "effect_glidewing", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn metaknight_glide2gfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_glide2gfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::EFFECT_OFF_KIND(fighter, Hash40::new("metaknight_sword"), false, false);
         macros::EFFECT_OFF_KIND(fighter, Hash40::new("sys_aura_light"), false, false);
     }
 }
 
-#[acmd_script(//GlideAttack
-    agent = "metaknight", 
-    script = "effect_glideattack", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn metaknight_glideattackgfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_glideattackgfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::EFFECT_FOLLOW(fighter, Hash40::new("metaknight_sword"), Hash40::new("haver"), 0.0, 0, 0, 0, 0, 0, 1, true);
     }
@@ -52,12 +37,8 @@ unsafe fn metaknight_glideattackgfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideLanding
-    agent = "metaknight", 
-    script = "effect_glidelanding", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn metaknight_glidelandinggfx(fighter: &mut L2CAgentBase) {
+
+unsafe extern "C" fn metaknight_glidelandinggfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::LANDING_EFFECT(fighter, Hash40::new("sys_landing_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 0, false);
     }
@@ -83,12 +64,7 @@ unsafe fn metaknight_uairgfx(fighter: &mut L2CAgentBase) {
     }
 }*/
 
-#[acmd_script(//SpecialHi
-    agent = "metaknight", 
-    script = "effect_specialhi", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn metaknight_upbgfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_upbgfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 1.0);
     if macros::is_excute(fighter) {
         macros::EFFECT_FOLLOW(fighter, Hash40::new("metaknight_sword"), Hash40::new("haver"), 0.0, 0, 0, 0, 0, 0, 1, true);
@@ -112,12 +88,7 @@ unsafe fn metaknight_upbgfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//SpecialHiLoop
-    agent = "metaknight", 
-    script = "effect_specialhiloop", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn metaknight_upbloopgfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_upbloopgfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::EFFECT_FOLLOW(fighter, Hash40::new("metaknight_sword"), Hash40::new("haver"), 0.0, 0, 0, 0, 0, 0, 1, true);
     }
@@ -133,14 +104,13 @@ unsafe fn metaknight_upbloopgfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-pub fn install() {
-    smashline::install_acmd_scripts!(
-        metaknight_glide1gfx,
-        metaknight_glide2gfx,
-        metaknight_glideattackgfx,
-        metaknight_glidelandinggfx,
-        //metaknight_uairgfx,
-        metaknight_upbgfx,
-        metaknight_upbloopgfx,
-    );
+pub fn install(agent: &mut Agent) {
+    agent 
+        .acmd("effect_glidestart", metaknight_glide1gfx, Priority::Low)
+        .acmd("effect_glidewing", metaknight_glide2gfx, Priority::Low)
+        .acmd("effect_glideattack", metaknight_glideattackgfx, Priority::Low)
+        .acmd("effect_glidelanding", metaknight_glidelandinggfx, Priority::Low)
+        //.acmd("effect_specialhi", metaknight_upbgfx, Priority::Low)
+        //.acmd("effect_specialhiloop", metaknight_upbloopgfx, Priority::Low)
+        ;
 }

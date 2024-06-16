@@ -4,12 +4,7 @@ use smashline::*;
 use smash_script::*;
 use smash::lua2cpp::L2CAgentBase;
 
-#[acmd_script(//GlideStart
-    agent = "palutena", 
-    script = "sound_glidestart", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn palutena_glidestartsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn palutena_glidestartsfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 6.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_palutena_dash_start"));
@@ -25,12 +20,7 @@ unsafe fn palutena_glidestartsfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideAttack
-    agent = "palutena", 
-    script = "sound_glideattack", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn palutena_glideattacksfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn palutena_glideattacksfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 5.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_palutena_swing_l"));
@@ -38,12 +28,7 @@ unsafe fn palutena_glideattacksfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideLanding
-    agent = "palutena", 
-    script = "sound_glidelanding", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn palutena_glidelandingsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn palutena_glidelandingsfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 2.0);
     if macros::is_excute(fighter) {
         macros::PLAY_DOWN_SE(fighter, Hash40::new("se_common_down_soil_s"));
@@ -54,12 +39,7 @@ unsafe fn palutena_glidelandingsfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideEnd
-    agent = "palutena", 
-    script = "sound_glideend", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn palutena_glideendsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn palutena_glideendsfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::STOP_SE(fighter, Hash40::new("se_palutena_glide_loop"));
     }
@@ -70,11 +50,10 @@ unsafe fn palutena_glideendsfx(fighter: &mut L2CAgentBase) {
     }
 }   
 
-pub fn install() {
-    smashline::install_acmd_scripts!(
-        palutena_glidestartsfx,
-        palutena_glideattacksfx,
-        palutena_glidelandingsfx,
-        palutena_glideendsfx
-    );
+pub fn install(agent: &mut Agent) {
+    agent
+        .acmd("sound_glidestart", palutena_glidestartsfx, Priority::Low)
+        .acmd("sound_glideattack", palutena_glideattacksfx, Priority::Low)
+        .acmd("sound_glidelanding", palutena_glidelandingsfx, Priority::Low)
+        .acmd("sound_glideend", palutena_glideendsfx, Priority::Low);
 }

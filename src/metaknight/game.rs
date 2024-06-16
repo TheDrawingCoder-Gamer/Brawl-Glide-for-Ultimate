@@ -10,12 +10,7 @@ use smash_script::*;
 use smash::lua2cpp::L2CAgentBase;
 use crate::utils::FIGHTER_CUTIN_MANAGER;
 
-#[acmd_script(//GlideStart
-    agent = "metaknight", 
-    script = "game_glidestart", 
-    category = ACMD_GAME, 
-    low_priority )]
-unsafe fn metaknight_glidestart(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_glidestart(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         VisibilityModule::set_status_default_int64(fighter.module_accessor, hash40("mantle") as i64, hash40("mantle_wing") as i64);
     }
@@ -25,12 +20,7 @@ unsafe fn metaknight_glidestart(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideAttack
-    agent = "metaknight", 
-    script = "game_glideattack", 
-    category = ACMD_GAME, 
-    low_priority )]
-unsafe fn metaknight_glideattack(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_glideattack(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 5.0);
     if macros::is_excute(fighter) {
         macros::ATTACK(fighter, /*ID*/ 0, /*Part*/ 0, /*Bone*/ Hash40::new("top"), /*Damage*/ 12.0, /*Angle*/ 70, /*KBG*/ 105, /*FKB*/ 0, /*BKB*/ 30, /*Size*/ 8.0, /*X*/ 7.0, /*Y*/ 11.0, /*Z*/ 11.0, /*X2*/ None, /*Y2*/ None, /*Z2*/ None, /*Hitlag*/ 1.2, /*SDI*/ 1.0, /*Clang_Rebound*/ *ATTACK_SETOFF_KIND_THRU, /*FacingRestrict*/ *ATTACK_LR_CHECK_POS, /*SetWeight*/ false, /*ShieldDamage*/ 0, /*Trip*/ 0.0, /*Rehit*/ 0, /*Reflectable*/ false, /*Absorbable*/ false, /*Flinchless*/ false, /*DisableHitlag*/ false, /*Direct_Hitbox*/ true, /*Ground_or_Air*/ *COLLISION_SITUATION_MASK_GA, /*Hitbits*/ *COLLISION_CATEGORY_MASK_ALL, /*CollisionPart*/ *COLLISION_PART_MASK_ALL, /*FriendlyFire*/ false, /*Effect*/ Hash40::new("collision_attr_cutup"), /*SFXLevel*/ *ATTACK_SOUND_LEVEL_L, /*SFXType*/ *COLLISION_SOUND_ATTR_CUTUP, /*Type*/ *ATTACK_REGION_SWORD);
@@ -43,12 +33,7 @@ unsafe fn metaknight_glideattack(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//SpecialHi
-    agent = "metaknight", 
-    script = "game_specialhi", 
-    category = ACMD_GAME, 
-    low_priority )]
-unsafe fn metaknight_upb(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_upb(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 5.0);
     if macros::is_excute(fighter) {
         HitModule::set_whole(fighter.module_accessor, HitStatus(*HIT_STATUS_XLU), 0);
@@ -92,12 +77,7 @@ unsafe fn metaknight_upb(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//SpecialHiLoop
-    agent = "metaknight", 
-    script = "game_specialhiloop", 
-    category = ACMD_GAME, 
-    low_priority )]
-unsafe fn metaknight_upbloop(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_upbloop(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         WorkModule::on_flag(fighter.module_accessor, /*Flag*/ *FIGHTER_STATUS_SUPER_JUMP_PUNCH_FLAG_MOVE_TRANS);
         macros::ATTACK(fighter, /*ID*/ 0, /*Part*/ 0, /*Bone*/ Hash40::new("body"), /*Damage*/ 9.0, /*Angle*/ 30, /*KBG*/ 60, /*FKB*/ 0, /*BKB*/ 90, /*Size*/ 7.0, /*X*/ 0.0, /*Y*/ 0.0, /*Z*/ 4.0, /*X2*/ None, /*Y2*/ None, /*Z2*/ None, /*Hitlag*/ 1.0, /*SDI*/ 1.0, /*Clang_Rebound*/ *ATTACK_SETOFF_KIND_OFF, /*FacingRestrict*/ *ATTACK_LR_CHECK_POS, /*SetWeight*/ true, /*ShieldDamage*/ 0, /*Trip*/ 0.0, /*Rehit*/ 0, /*Reflectable*/ false, /*Absorbable*/ false, /*Flinchless*/ false, /*DisableHitlag*/ false, /*Direct_Hitbox*/ true, /*Ground_or_Air*/ *COLLISION_SITUATION_MASK_GA, /*Hitbits*/ *COLLISION_CATEGORY_MASK_ALL, /*CollisionPart*/ *COLLISION_PART_MASK_ALL, /*FriendlyFire*/ false, /*Effect*/ Hash40::new("collision_attr_cutup"), /*SFXLevel*/ *ATTACK_SOUND_LEVEL_L, /*SFXType*/ *COLLISION_SOUND_ATTR_CUTUP, /*Type*/ *ATTACK_REGION_SWORD);
@@ -125,11 +105,27 @@ unsafe fn metaknight_upbloop(fighter: &mut L2CAgentBase) {
     }
 }
 
-pub fn install() {
-    smashline::install_acmd_scripts!(
-        metaknight_glidestart,
-        metaknight_glideattack,
-        metaknight_upb,
-        metaknight_upbloop
-    );
+unsafe extern "C" fn metaknight_special_hi_main_status(fighter: &mut L2CFighterCommon) -> L2CValue {
+    let ret = original_status(Main, fighter, *FIGHTER_STATUS_KIND_SPECIAL_HI)(fighter);
+    WorkModule::set_int(fighter.module_accessor, *FIGHTER_STATUS_KIND_GLIDE, *FIGHTER_STATUS_SUPER_JUMP_PUNCH_WORK_INT_STATUS_KIND_END);
+    WorkModule::on_flag(fighter.module_accessor, *FIGHTER_METAKNIGHT_INSTANCE_WORK_ID_FLAG_SPECIAL_HI_GLIDE);
+    ret
+}
+
+unsafe extern "C" fn metaknight_special_hi_loop_status_main(fighter: &mut L2CFighterCommon) -> L2CValue {
+    let ret = original_status(Main, fighter, *FIGHTER_METAKNIGHT_STATUS_KIND_SPECIAL_HI_LOOP)(fighter);
+    WorkModule::set_int(fighter.module_accessor, *FIGHTER_STATUS_KIND_GLIDE, *FIGHTER_STATUS_SUPER_JUMP_PUNCH_WORK_INT_STATUS_KIND_END);
+    WorkModule::on_flag(fighter.module_accessor, *FIGHTER_METAKNIGHT_INSTANCE_WORK_ID_FLAG_SPECIAL_HI_GLIDE);
+    ret
+}
+
+pub fn install(agent: &mut Agent) {
+    agent
+        .acmd("game_glidestart", metaknight_glidestart, Priority::Low)
+        .acmd("game_glideattack", metaknight_glideattack, Priority::Low)
+        //.acmd("game_specialhi", metaknight_upb, Priority::Low)
+        //.acmd("game_specialhiloop", metaknight_upbloop, Priority::Low)
+        //.status(Main, *FIGHTER_STATUS_KIND_SPECIAL_HI, metaknight_special_hi_main_status)
+        //.status(Main, *FIGHTER_METAKNIGHT_STATUS_KIND_SPECIAL_HI_LOOP, metaknight_special_hi_loop_status_main)
+        ;
 }

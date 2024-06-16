@@ -6,12 +6,7 @@ use smashline::*;
 use smash_script::*;
 use smash::lua2cpp::L2CAgentBase;
 
-#[acmd_script(//GlideStart
-    agent = "pit", 
-    script = "effect_glidestart", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn pit_glidestartgfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn pit_glidestartgfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::EFFECT_FOLLOW(fighter, Hash40::new("pit_sword"), Hash40::new("swordr2"), -0, 0, 0, 0, 0, 0, 1, true);
         macros::EFFECT_FOLLOW(fighter, Hash40::new("pit_sword"), Hash40::new("swordl"), -0, 0, 0, 0, 0, 0, 1, true);
@@ -31,23 +26,13 @@ unsafe fn pit_glidestartgfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideWingGFX
-    agent = "pit", 
-    script = "effect_glidewing", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn pit_glidegfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn pit_glidegfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::EFFECT_OFF_KIND(fighter, Hash40::new("sys_aura_light"), false, false);
     }
 }
 
-#[acmd_script(//GlideAttack
-    agent = "pit", 
-    script = "effect_glideattack", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn pit_glideattackgfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn pit_glideattackgfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 2.0);
     if macros::is_excute(fighter) {
         macros::EFFECT_FOLLOW(fighter, Hash40::new("pit_sword"), Hash40::new("swordr2"), -0, 0, 0, 0, 90, 0, 1, true);
@@ -67,12 +52,7 @@ unsafe fn pit_glideattackgfx(fighter: &mut L2CAgentBase) {
     }
 }  
 
-#[acmd_script(//GlideLanding
-    agent = "pit", 
-    script = "effect_glidelanding", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn pit_glidelandinggfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn pit_glidelandinggfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::EFFECT_OFF_KIND(fighter, Hash40::new("pit_ikaros_wing_flare"), true, true);
         macros::EFFECT_OFF_KIND(fighter, Hash40::new("pit_fly_miracle_start"), true, true);
@@ -81,12 +61,7 @@ unsafe fn pit_glidelandinggfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideEnd
-    agent = "pit", 
-    script = "effect_glideend", 
-    category = ACMD_EFFECT, 
-    low_priority )]
-unsafe fn pit_glideendgfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn pit_glideendgfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::EFFECT_OFF_KIND(fighter, Hash40::new("pit_ikaros_wing_flare"), true, true);
         macros::EFFECT_OFF_KIND(fighter, Hash40::new("pit_fly_miracle_start"), true, true);
@@ -94,12 +69,11 @@ unsafe fn pit_glideendgfx(fighter: &mut L2CAgentBase) {
     }
 }   
 
-pub fn install() {
-    smashline::install_acmd_scripts!(
-        pit_glidestartgfx,
-        pit_glidegfx,
-        pit_glideattackgfx,
-        pit_glidelandinggfx,
-        pit_glideendgfx
-    );
+pub fn install(agent: &mut Agent) {
+    agent
+        .acmd("effect_glidestart", pit_glidestartgfx, Priority::Low)
+        .acmd("effect_glidewing", pit_glidegfx, Priority::Low)
+        .acmd("effect_glideattack", pit_glideattackgfx, Priority::Low)
+        .acmd("effect_glidelanding", pit_glidelandinggfx, Priority::Low)
+        .acmd("effect_glideend", pit_glideendgfx, Priority::Low);
 }

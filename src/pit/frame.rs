@@ -5,10 +5,9 @@ use smash::app::lua_bind::*;
 use smashline::*;
 use smash_script::*;
 use smash::lua2cpp::L2CFighterCommon;
-use smash::app::{sv_information};
+use smash::app::sv_information;
 
-#[fighter_frame( agent = FIGHTER_KIND_PIT )]
-fn pit_opff(fighter: &mut L2CFighterCommon) {
+unsafe extern "C" fn pit_opff(fighter: &mut L2CFighterCommon) {
     unsafe {
         let status_kind = StatusModule::status_kind(fighter.module_accessor);
         if [
@@ -33,8 +32,6 @@ fn pit_opff(fighter: &mut L2CFighterCommon) {
     }
 }        
 
-pub fn install() {
-    smashline::install_agent_frames!(
-        pit_opff
-    );
+pub fn install(agent: &mut Agent) {
+    agent.on_line(Main, pit_opff);
 }

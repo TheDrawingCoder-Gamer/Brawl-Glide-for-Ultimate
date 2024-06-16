@@ -4,12 +4,8 @@ use smashline::*;
 use smash_script::*;
 use smash::lua2cpp::L2CAgentBase;
 
-#[acmd_script(//GlideStart
-    agent = "trail", 
-    script = "sound_glidestart", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn trail_glidestartsfx(fighter: &mut L2CAgentBase) {
+// Glide Start
+unsafe extern "C" fn trail_glidestartsfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 14.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_trail_jump03"));
@@ -26,12 +22,8 @@ unsafe fn trail_glidestartsfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideAttack
-    agent = "trail", 
-    script = "sound_glideattack", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn trail_glideattacksfx(fighter: &mut L2CAgentBase) {
+// Glide attack
+unsafe extern "C" fn trail_glideattacksfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 10.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SEQUENCE(fighter, Hash40::new("seq_trail_rnd_attack11"));
@@ -44,12 +36,8 @@ unsafe fn trail_glideattacksfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideLanding
-    agent = "trail", 
-    script = "sound_glidelanding", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn trail_glidelandingsfx(fighter: &mut L2CAgentBase) {
+// Glide Landing
+unsafe extern "C" fn trail_glidelandingsfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 2.0);
     if macros::is_excute(fighter) {
         macros::PLAY_DOWN_SE(fighter, Hash40::new("se_common_down_soil_s"));
@@ -60,10 +48,9 @@ unsafe fn trail_glidelandingsfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-pub fn install() {
-    smashline::install_acmd_scripts!(
-        trail_glidestartsfx,
-        trail_glideattacksfx,
-        trail_glidelandingsfx
-    );
+pub fn install(agent: &mut Agent) {
+    agent
+        .acmd("sound_glidelanding", trail_glidelandingsfx, Priority::Low)
+        .acmd("sound_glideattack", trail_glideattacksfx, Priority::Low)
+        .acmd("sound_glidestart", trail_glidestartsfx, Priority::Low);
 }

@@ -4,12 +4,7 @@ use smashline::*;
 use smash_script::*;
 use smash::lua2cpp::L2CAgentBase;
 
-#[acmd_script(//GlideStart
-    agent = "metaknight", 
-    script = "sound_glidestart", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn metaknight_glidestartsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_glidestartsfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 7.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_metaknight_jump04"));
@@ -28,24 +23,14 @@ unsafe fn metaknight_glidestartsfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideAttack
-    agent = "metaknight", 
-    script = "sound_glideattack", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn metaknight_glideattacksfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_glideattacksfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 3.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_metaknight_attack100_03"));
     }
 }
 
-#[acmd_script(//GlideLanding
-    agent = "metaknight", 
-    script = "sound_glidelanding", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn metaknight_glidelandingsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_glidelandingsfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::STOP_SE(fighter, Hash40::new("se_metaknight_glide_start"));
         macros::STOP_SE(fighter, Hash40::new("se_metaknight_glide_loop"));
@@ -60,12 +45,7 @@ unsafe fn metaknight_glidelandingsfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideEnd
-    agent = "metaknight", 
-    script = "sound_glideend", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn metaknight_glideendsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_glideendsfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::STOP_SE(fighter, Hash40::new("se_metaknight_glide_start"));
         macros::STOP_SE(fighter, Hash40::new("se_metaknight_glide_loop"));
@@ -114,12 +94,7 @@ unsafe fn metaknight_sidebstartsfx(fighter: &mut L2CAgentBase) {
     }
 }*/
 
-#[acmd_script(//SpecialHi
-    agent = "metaknight", 
-    script = "sound_specialhi", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn metaknight_upbsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_upbsfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 1.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_metaknight_special_h01"));
@@ -135,12 +110,7 @@ unsafe fn metaknight_upbsfx(fighter: &mut L2CAgentBase) {
     }
 }    
 
-#[acmd_script(//SpecialHiLoop
-    agent = "metaknight", 
-    script = "sound_specialhiloop", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn metaknight_upbloopsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn metaknight_upbloopsfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 1.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_metaknight_special_h01"));
@@ -156,16 +126,12 @@ unsafe fn metaknight_upbloopsfx(fighter: &mut L2CAgentBase) {
     }
 }   
 
-pub fn install() {
-    smashline::install_acmd_scripts!(
-        metaknight_glidestartsfx,
-        metaknight_glideattacksfx,
-        metaknight_glidelandingsfx,
-        metaknight_glideendsfx,
-        /*metaknight_neutralbstartsfx,
-        metaknight_neutralbairstartsfx,
-        metaknight_sidebstartsfx,*/
-        metaknight_upbsfx,
-        metaknight_upbloopsfx
-    );
+pub fn install(agent: &mut Agent) {
+    agent 
+        .acmd("sound_glidestart", metaknight_glidestartsfx, Priority::Low)
+        .acmd("sound_glideattack", metaknight_glideattacksfx, Priority::Low)
+        .acmd("sound_glidelanding", metaknight_glidelandingsfx, Priority::Low)
+        .acmd("sound_glideend", metaknight_glideendsfx, Priority::Low)
+        .acmd("sound_specialhi", metaknight_upbsfx, Priority::Low)
+        .acmd("sound_specialhiloop", metaknight_upbloopsfx, Priority::Low);
 }

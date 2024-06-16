@@ -5,11 +5,9 @@ use smash::app::lua_bind::*;
 use smashline::*;
 use smash_script::*;
 use smash::lua2cpp::L2CFighterCommon;
-use smash::app::{sv_information};
+use smash::app::sv_information;
 
-#[fighter_frame( agent = FIGHTER_KIND_BUDDY )]
-fn buddy_opff(fighter: &mut L2CFighterCommon) {
-    unsafe {
+unsafe extern "C" fn buddy_opff(fighter: &mut L2CFighterCommon) {
         let status_kind = StatusModule::status_kind(fighter.module_accessor);
         if [
             *FIGHTER_STATUS_KIND_LANDING,
@@ -34,11 +32,8 @@ fn buddy_opff(fighter: &mut L2CFighterCommon) {
                 macros::PLAY_SE(fighter, Hash40::new("se_buddy_wing"));
             }
         }
-    }
 }        
 
-pub fn install() {
-    smashline::install_agent_frames!(
-        buddy_opff
-    );
+pub fn install(agent: &mut Agent) {
+    agent.on_line(Main, buddy_opff);
 }

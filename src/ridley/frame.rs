@@ -7,8 +7,7 @@ use smash_script::*;
 use smash::lua2cpp::L2CFighterCommon;
 use smash::app::{sv_information};
 
-#[fighter_frame( agent = FIGHTER_KIND_RIDLEY )]
-fn ridley_opff(fighter: &mut L2CFighterCommon) {
+unsafe extern "C" fn ridley_opff(fighter: &mut L2CFighterCommon) {
     unsafe {
         let status_kind = StatusModule::status_kind(fighter.module_accessor);
         if [
@@ -42,8 +41,6 @@ fn ridley_opff(fighter: &mut L2CFighterCommon) {
     }
 }        
 
-pub fn install() {
-    smashline::install_agent_frames!(
-        ridley_opff
-    );
+pub fn install(agent: &mut Agent) {
+    agent.on_line(Main, ridley_opff);
 }

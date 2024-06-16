@@ -306,8 +306,7 @@ pub unsafe fn status_glidestart(fighter: &mut L2CFighterCommon) -> L2CValue {
 /*Glide's init status. Specifies the base speed and gravity speed of the glide. Also uses our modded
 KineticUtility function here, which is one of the vital things in getting the glide the work.*/
 
-#[common_status_script( status = FIGHTER_STATUS_KIND_GLIDE, condition = LUA_SCRIPT_STATUS_FUNC_INIT_STATUS)]
-pub unsafe fn status_init_glide(fighter: &mut L2CFighterCommon) -> L2CValue {
+pub unsafe extern "C" fn status_init_glide(fighter: &mut L2CFighterCommon) -> L2CValue {
     let lr = PostureModule::lr(fighter.module_accessor);
     let sum_speed_y = KineticModule::get_sum_speed_y(fighter.module_accessor, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
     let params = GlideParams::get(fighter);
@@ -358,7 +357,7 @@ pub unsafe fn status_glide(fighter: &mut L2CFighterCommon) -> L2CValue {
 
 /*Main exec status for glide that controls a lot of things. Runs once-per-frame.*/
 
-#[common_status_script( status = FIGHTER_STATUS_KIND_GLIDE, condition = LUA_SCRIPT_STATUS_FUNC_EXEC_STATUS)]
+// #[skyline::hook(replace = L2CFighterCommon_status_Glide_Main)]
 unsafe extern "C" fn status_exec_glide(fighter: &mut L2CFighterCommon) -> L2CValue {
     let params = GlideParams::get(fighter);
     let lr = PostureModule::lr(fighter.module_accessor);
@@ -532,15 +531,17 @@ fn nro_hook(info: &skyline::nro::NroInfo) {
     if info.name == "common" {
         skyline::install_hooks!(
             status_glidestart,
-            status_glide, bind_address_call_status_end_glide, status_end_glide
+            status_glide, bind_address_call_status_end_glide, status_end_glide, 
         );
     }
 }
 
 pub fn install() {
     skyline::nro::add_hook(nro_hook);
-    install_status_scripts!(
-        status_init_glide,
-        status_exec_glide
-    );
+
+    Agent::new("fighter")
+        .status(Exec, *FIGHTER_STATUS_KIND_GLIDE, status_exec_glide)
+        .status(Init, *FIGHTER_STATUS_KIND_GLIDE, status_init_glide)
+        .install();
+
 }

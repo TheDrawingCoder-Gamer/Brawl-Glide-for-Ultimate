@@ -4,8 +4,9 @@ mod sound;
 mod frame;
 
 pub fn install() {
-    game::install();
-    effect::install();
-    sound::install();
-    frame::install();
+    let mut agent = smashline::Agent::new("pitb");
+    game::install(&mut agent);
+    effect::install(&mut agent);
+    sound::install(&mut agent);
+    frame::install(&mut agent);
 }

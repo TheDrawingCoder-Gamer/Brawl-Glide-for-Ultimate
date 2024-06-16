@@ -4,12 +4,7 @@ use smashline::*;
 use smash_script::*;
 use smash::lua2cpp::L2CAgentBase;
 
-#[acmd_script(//GlideStart
-    agent = "pit", 
-    script = "sound_glidestart", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn pit_glidestartsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn pit_glidestartsfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 6.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_pit_jump02"));
@@ -25,24 +20,14 @@ unsafe fn pit_glidestartsfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideAttack
-    agent = "pit", 
-    script = "sound_glideattack", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn pit_glideattacksfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn pit_glideattacksfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 5.0);
     if macros::is_excute(fighter) {
         macros::PLAY_SE(fighter, Hash40::new("se_pit_swing_m"));
     }
 }
 
-#[acmd_script(//GlideLanding
-    agent = "pit", 
-    script = "sound_glidelanding", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn pit_glidelandingsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn pit_glidelandingsfx(fighter: &mut L2CAgentBase) {
     frame(fighter.lua_state_agent, 2.0);
     if macros::is_excute(fighter) {
         macros::PLAY_DOWN_SE(fighter, Hash40::new("se_common_down_soil_s"));
@@ -53,12 +38,7 @@ unsafe fn pit_glidelandingsfx(fighter: &mut L2CAgentBase) {
     }
 }
 
-#[acmd_script(//GlideEnd
-    agent = "pit", 
-    script = "sound_glideend", 
-    category = ACMD_SOUND, 
-    low_priority )]
-unsafe fn pit_glideendsfx(fighter: &mut L2CAgentBase) {
+unsafe extern "C" fn pit_glideendsfx(fighter: &mut L2CAgentBase) {
     if macros::is_excute(fighter) {
         macros::STOP_SE(fighter, Hash40::new("se_pit_bowsplit"));
     }
@@ -68,11 +48,10 @@ unsafe fn pit_glideendsfx(fighter: &mut L2CAgentBase) {
     }
 }  
 
-pub fn install() {
-    smashline::install_acmd_scripts!(
-        pit_glidestartsfx,
-        pit_glideattacksfx,
-        pit_glidelandingsfx,
-        pit_glideendsfx
-    );
+pub fn install(agent: &mut Agent) {
+    agent 
+        .acmd("sound_glidestart", pit_glidestartsfx, Priority::Low)
+        .acmd("sound_glideattack", pit_glideattacksfx, Priority::Low)
+        .acmd("sound_glidelanding", pit_glidelandingsfx, Priority::Low)
+        .acmd("sound_glideend", pit_glideendsfx, Priority::Low);
 }

@@ -7,8 +7,7 @@ use smash_script::*;
 use smash::lua2cpp::L2CFighterCommon;
 use smash::app::*;
 
-#[fighter_frame( agent = FIGHTER_KIND_PALUTENA )]
-fn palutena_opff(fighter: &mut L2CFighterCommon) {
+unsafe extern "C" fn palutena_opff(fighter: &mut L2CFighterCommon) {
     unsafe {
         let status_kind = StatusModule::status_kind(fighter.module_accessor);
         if [
@@ -64,8 +63,6 @@ fn palutena_opff(fighter: &mut L2CFighterCommon) {
     }
 }        
 
-pub fn install() {
-    smashline::install_agent_frames!(
-        palutena_opff
-    );
+pub fn install(agent: &mut Agent) {
+    agent.on_line(Main, palutena_opff);
 }
